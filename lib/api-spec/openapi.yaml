@@ -3,20 +3,27 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: SmartSpend API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: expenses
+    description: Expense management
+  - name: budget
+    description: Budget planning
+  - name: analytics
+    description: Dashboard analytics
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +31,259 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: User registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login with email and password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current authenticated user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Unauthorized
+
+  /expenses:
+    get:
+      operationId: getExpenses
+      tags: [expenses]
+      summary: Get all expenses with optional filters
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: startDate
+          in: query
+          schema:
+            type: string
+        - name: endDate
+          in: query
+          schema:
+            type: string
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: List of expenses
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExpenseListResponse"
+    post:
+      operationId: createExpense
+      tags: [expenses]
+      summary: Create a new expense
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpenseInput"
+      responses:
+        "201":
+          description: Expense created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+
+  /expenses/{id}:
+    get:
+      operationId: getExpense
+      tags: [expenses]
+      summary: Get a single expense
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Expense
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+        "404":
+          description: Not found
+    put:
+      operationId: updateExpense
+      tags: [expenses]
+      summary: Update an expense
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpenseUpdate"
+      responses:
+        "200":
+          description: Updated expense
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Expense"
+    delete:
+      operationId: deleteExpense
+      tags: [expenses]
+      summary: Delete an expense
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /budget:
+    get:
+      operationId: getBudget
+      tags: [budget]
+      summary: Get current month budget
+      responses:
+        "200":
+          description: Budget
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Budget"
+    post:
+      operationId: setBudget
+      tags: [budget]
+      summary: Set or update monthly budget
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BudgetInput"
+      responses:
+        "200":
+          description: Updated budget
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Budget"
+
+  /analytics/summary:
+    get:
+      operationId: getSummary
+      tags: [analytics]
+      summary: Get dashboard summary - total spent, budget, category breakdown
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
+  /analytics/monthly:
+    get:
+      operationId: getMonthlyTrend
+      tags: [analytics]
+      summary: Get monthly spending trend for bar chart (last 6 months)
+      responses:
+        "200":
+          description: Monthly spending data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MonthlySpend"
+
+  /analytics/categories:
+    get:
+      operationId: getCategoryBreakdown
+      tags: [analytics]
+      summary: Get spending by category for pie chart (current month)
+      responses:
+        "200":
+          description: Category breakdown
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CategorySpend"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +294,268 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - email
+        - createdAt
+
+    RegisterInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+      required:
+        - name
+        - email
+        - password
+
+    LoginInput:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+      required:
+        - token
+        - user
+
+    Expense:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        amount:
+          type: number
+        category:
+          type: string
+        date:
+          type: string
+        description:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+      required:
+        - id
+        - title
+        - amount
+        - category
+        - date
+        - createdAt
+
+    ExpenseInput:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        amount:
+          type: number
+          minimum: 0
+        category:
+          type: string
+        date:
+          type: string
+        description:
+          type: string
+      required:
+        - title
+        - amount
+        - category
+        - date
+
+    ExpenseUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        amount:
+          type: number
+          minimum: 0
+        category:
+          type: string
+        date:
+          type: string
+        description:
+          type: string
+
+    ExpenseListResponse:
+      type: object
+      properties:
+        expenses:
+          type: array
+          items:
+            $ref: "#/components/schemas/Expense"
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+        totalPages:
+          type: integer
+      required:
+        - expenses
+        - total
+        - page
+        - limit
+        - totalPages
+
+    Budget:
+      type: object
+      properties:
+        id:
+          type: string
+        month:
+          type: integer
+        year:
+          type: integer
+        totalLimit:
+          type: number
+        categoryLimits:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryLimit"
+        spent:
+          type: number
+        remaining:
+          type: number
+      required:
+        - id
+        - month
+        - year
+        - totalLimit
+        - categoryLimits
+        - spent
+        - remaining
+
+    BudgetInput:
+      type: object
+      properties:
+        totalLimit:
+          type: number
+          minimum: 0
+        month:
+          type: integer
+        year:
+          type: integer
+        categoryLimits:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategoryLimit"
+      required:
+        - totalLimit
+
+    CategoryLimit:
+      type: object
+      properties:
+        category:
+          type: string
+        limit:
+          type: number
+      required:
+        - category
+        - limit
+
+    DashboardSummary:
+      type: object
+      properties:
+        totalSpentThisMonth:
+          type: number
+        totalBudget:
+          type: number
+        budgetUsedPercent:
+          type: number
+        remainingBudget:
+          type: number
+        expenseCount:
+          type: integer
+        topCategory:
+          type: ["string", "null"]
+        recentExpenses:
+          type: array
+          items:
+            $ref: "#/components/schemas/Expense"
+      required:
+        - totalSpentThisMonth
+        - totalBudget
+        - budgetUsedPercent
+        - remainingBudget
+        - expenseCount
+        - topCategory
+        - recentExpenses
+
+    MonthlySpend:
+      type: object
+      properties:
+        month:
+          type: string
+        total:
+          type: number
+      required:
+        - month
+        - total
+
+    CategorySpend:
+      type: object
+      properties:
+        category:
+          type: string
+        total:
+          type: number
+        percent:
+          type: number
+      required:
+        - category
+        - total
+        - percent
