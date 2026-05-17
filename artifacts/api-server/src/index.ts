@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 import app from "./app";
 import { logger } from "./lib/logger";
 import { connectMongoDB } from "./lib/mongodb";
@@ -23,6 +25,7 @@ connectMongoDB()
         logger.error({ err }, "Error listening on port");
         process.exit(1);
       }
+
       logger.info({ port }, "Server listening");
     });
   })
