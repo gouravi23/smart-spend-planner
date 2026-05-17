@@ -20,7 +20,7 @@ export default defineConfig({
 
     proxy: {
       "/api": {
-        target: "http://localhost:8080",
+        target: "https://smartspend-api-ynby.onrender.com",
         changeOrigin: true,
       },
     },
