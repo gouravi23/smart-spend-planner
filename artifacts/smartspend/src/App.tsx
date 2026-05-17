@@ -1,4 +1,4 @@
-import { Switch, Route, Router as WouterRouter, Redirect, useLocation } from "wouter";
+import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,31 +21,45 @@ const queryClient = new QueryClient({
   },
 });
 
-function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
-  const { isAuthenticated } = useAuth();
-  if (!isAuthenticated) return <Redirect to="/login" />;
-  return (
-    <Layout>
-      <Component />
-    </Layout>
-  );
-}
-
-function PublicRoute({ component: Component }: { component: React.ComponentType }) {
-  const { isAuthenticated } = useAuth();
-  if (isAuthenticated) return <Redirect to="/" />;
-  return <Component />;
-}
-
 function Router() {
+  const { isAuthenticated } = useAuth();
+
   return (
     <Switch>
-      <Route path="/login" component={() => <PublicRoute component={Login} />} />
-      <Route path="/register" component={() => <PublicRoute component={Register} />} />
-      <Route path="/" component={() => <ProtectedRoute component={Dashboard} />} />
-      <Route path="/expenses" component={() => <ProtectedRoute component={Expenses} />} />
-      <Route path="/budget" component={() => <ProtectedRoute component={Budget} />} />
-      <Route path="/analytics" component={() => <ProtectedRoute component={Analytics} />} />
+      <Route path="/login">
+        {isAuthenticated ? <Redirect to="/" /> : <Login />}
+      </Route>
+      <Route path="/register">
+        {isAuthenticated ? <Redirect to="/" /> : <Register />}
+      </Route>
+      <Route path="/">
+        {isAuthenticated ? (
+          <Layout><Dashboard /></Layout>
+        ) : (
+          <Redirect to="/login" />
+        )}
+      </Route>
+      <Route path="/expenses">
+        {isAuthenticated ? (
+          <Layout><Expenses /></Layout>
+        ) : (
+          <Redirect to="/login" />
+        )}
+      </Route>
+      <Route path="/budget">
+        {isAuthenticated ? (
+          <Layout><Budget /></Layout>
+        ) : (
+          <Redirect to="/login" />
+        )}
+      </Route>
+      <Route path="/analytics">
+        {isAuthenticated ? (
+          <Layout><Analytics /></Layout>
+        ) : (
+          <Redirect to="/login" />
+        )}
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
