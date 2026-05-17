@@ -14,9 +14,7 @@ export const customFetch = async <T>(
   url: string,
   options?: RequestInit
 ): Promise<T> => {
-  const API_URL =
-    import.meta.env.VITE_API_URL ||
-    "https://smartspend-api-ynby.onrender.com";
+ const API_URL = "https://smartspend-api-ynby.onrender.com";
 
   const token = getToken();
 
