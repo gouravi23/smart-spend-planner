@@ -6,19 +6,24 @@ export const setAuthTokenGetter = (fn: AuthTokenGetter) => {
   getToken = fn;
 };
 
-export const setBaseUrl = (url: string) => {
-  // optional if used, otherwise safe stub
+export const setBaseUrl = (_url: string) => {
+  // not needed (safe stub)
 };
+
+const API_URL = "https://smartspend-api-ynby.onrender.com";
 
 export const customFetch = async <T>(
   url: string,
   options?: RequestInit
 ): Promise<T> => {
- const API_URL = "https://smartspend-api-ynby.onrender.com";
-
   const token = getToken();
 
-  const response = await fetch(`${API_URL}${url}`, {
+  // ✅ ensures correct /api routing
+  const cleanUrl = url.startsWith("/api")
+    ? url
+    : `/api${url}`;
+
+  const response = await fetch(`${API_URL}${cleanUrl}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -27,9 +32,11 @@ export const customFetch = async <T>(
     },
   });
 
+  const text = await response.text();
+
   if (!response.ok) {
-    throw new Error(await response.text());
+    throw new Error(text);
   }
 
-  return response.json();
+  return JSON.parse(text);
 };
