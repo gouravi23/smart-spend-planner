@@ -6,14 +6,25 @@ import { Response } from "express";
 
 const router = Router();
 
-router.post("/auth/register", async (req, res) => {
+/**
+ * NOTE:
+ * These routes assume this in app.ts:
+ * app.use("/api", router)
+ */
+
+router.post("/register", async (req, res) => {
   try {
-    const { name, email, password } = req.body as { name: string; email: string; password: string };
+    const { name, email, password } = req.body as {
+      name: string;
+      email: string;
+      password: string;
+    };
 
     if (!name || !email || !password) {
       res.status(400).json({ error: "Name, email, and password are required" });
       return;
     }
+
     if (password.length < 6) {
       res.status(400).json({ error: "Password must be at least 6 characters" });
       return;
@@ -29,6 +40,7 @@ router.post("/auth/register", async (req, res) => {
     await user.save();
 
     const token = signToken(user._id.toString());
+
     res.status(201).json({
       token,
       user: {
@@ -44,9 +56,12 @@ router.post("/auth/register", async (req, res) => {
   }
 });
 
-router.post("/auth/login", async (req, res) => {
+router.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body as { email: string; password: string };
+    const { email, password } = req.body as {
+      email: string;
+      password: string;
+    };
 
     if (!email || !password) {
       res.status(400).json({ error: "Email and password are required" });
@@ -54,18 +69,21 @@ router.post("/auth/login", async (req, res) => {
     }
 
     const user = await User.findOne({ email });
+
     if (!user) {
       res.status(401).json({ error: "Invalid email or password" });
       return;
     }
 
     const valid = await user.comparePassword(password);
+
     if (!valid) {
       res.status(401).json({ error: "Invalid email or password" });
       return;
     }
 
     const token = signToken(user._id.toString());
+
     res.json({
       token,
       user: {
@@ -81,13 +99,15 @@ router.post("/auth/login", async (req, res) => {
   }
 });
 
-router.get("/auth/me", authMiddleware, async (req: AuthRequest, res: Response) => {
+router.get("/me", authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const user = await User.findById(req.userId);
+
     if (!user) {
       res.status(404).json({ error: "User not found" });
       return;
     }
+
     res.json({
       id: user._id.toString(),
       name: user.name,

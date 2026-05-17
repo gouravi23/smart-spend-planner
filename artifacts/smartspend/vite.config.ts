@@ -19,10 +19,10 @@ export default defineConfig({
     port: 5173,
 
     proxy: {
-      "/api": {
-        target: "https://smartspend-api-ynby.onrender.com",
-        changeOrigin: true,
-      },
-    },
+  "/api": {
+    target: "http://localhost:8080",
+    changeOrigin: true,
+     },  
+   }
   },
 });

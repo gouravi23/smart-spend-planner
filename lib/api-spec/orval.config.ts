@@ -28,8 +28,7 @@ export default defineConfig({
       mode: "split",
 
       // UPDATED PRODUCTION BACKEND URL
-      baseUrl: "https://smartspend-api-ynby.onrender.com/api",
-
+      baseUrl: "https://smartspend-api-ynby.onrender.com"
       clean: true,
       prettier: true,
       override: {
