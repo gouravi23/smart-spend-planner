@@ -284,6 +284,38 @@ paths:
                 items:
                   $ref: "#/components/schemas/CategorySpend"
 
+  /gamification:
+    get:
+      operationId: getGamification
+      tags: [analytics]
+      summary: Get gamification data - streaks, badges, health score, weekly challenge
+      responses:
+        "200":
+          description: Gamification data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GamificationData"
+
+  /assistant/chat:
+    post:
+      operationId: assistantChat
+      tags: [analytics]
+      summary: Send a message to the AI financial assistant
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatInput"
+      responses:
+        "200":
+          description: Assistant reply
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -573,3 +605,64 @@ components:
         - category
         - total
         - percent
+
+    WeeklyChallenge:
+      type: object
+      properties:
+        weekStart:
+          type: string
+        targetAmount:
+          type: number
+        currentAmount:
+          type: number
+        completed:
+          type: boolean
+      required:
+        - weekStart
+        - targetAmount
+        - currentAmount
+        - completed
+
+    GamificationData:
+      type: object
+      properties:
+        currentStreak:
+          type: integer
+        longestStreak:
+          type: integer
+        badges:
+          type: array
+          items:
+            type: string
+        weeklyChallenge:
+          $ref: "#/components/schemas/WeeklyChallenge"
+        healthScore:
+          type: integer
+        totalBadgesAvailable:
+          type: integer
+      required:
+        - currentStreak
+        - longestStreak
+        - badges
+        - weeklyChallenge
+        - healthScore
+        - totalBadgesAvailable
+
+    ChatInput:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+
+    ChatResponse:
+      type: object
+      properties:
+        reply:
+          type: string
+        timestamp:
+          type: string
+      required:
+        - reply
+        - timestamp

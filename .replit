@@ -30,3 +30,8 @@ externalPort = 80
 [[ports]]
 localPort = 25429
 externalPort = 3000
+
+[userenv]
+
+[userenv.shared]
+MONGODB_URI = "mongodb+srv://smartspend:smart123@cluster0.uo2oagn.mongodb.net/smartspend?retryWrites=true&w=majority&appName=Cluster0"

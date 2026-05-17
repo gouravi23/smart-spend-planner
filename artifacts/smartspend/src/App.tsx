@@ -10,6 +10,8 @@ import Dashboard from "@/pages/Dashboard";
 import Expenses from "@/pages/Expenses";
 import Budget from "@/pages/Budget";
 import Analytics from "@/pages/Analytics";
+import Achievements from "@/pages/Achievements";
+import About from "@/pages/About";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient({
@@ -20,6 +22,11 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <Layout>{children}</Layout> : <Redirect to="/login" />;
+}
 
 function Router() {
   const { isAuthenticated } = useAuth();
@@ -33,32 +40,22 @@ function Router() {
         {isAuthenticated ? <Redirect to="/" /> : <Register />}
       </Route>
       <Route path="/">
-        {isAuthenticated ? (
-          <Layout><Dashboard /></Layout>
-        ) : (
-          <Redirect to="/login" />
-        )}
+        <ProtectedRoute><Dashboard /></ProtectedRoute>
       </Route>
       <Route path="/expenses">
-        {isAuthenticated ? (
-          <Layout><Expenses /></Layout>
-        ) : (
-          <Redirect to="/login" />
-        )}
+        <ProtectedRoute><Expenses /></ProtectedRoute>
       </Route>
       <Route path="/budget">
-        {isAuthenticated ? (
-          <Layout><Budget /></Layout>
-        ) : (
-          <Redirect to="/login" />
-        )}
+        <ProtectedRoute><Budget /></ProtectedRoute>
       </Route>
       <Route path="/analytics">
-        {isAuthenticated ? (
-          <Layout><Analytics /></Layout>
-        ) : (
-          <Redirect to="/login" />
-        )}
+        <ProtectedRoute><Analytics /></ProtectedRoute>
+      </Route>
+      <Route path="/achievements">
+        <ProtectedRoute><Achievements /></ProtectedRoute>
+      </Route>
+      <Route path="/about">
+        <ProtectedRoute><About /></ProtectedRoute>
       </Route>
       <Route component={NotFound} />
     </Switch>

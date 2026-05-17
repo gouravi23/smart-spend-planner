@@ -7,14 +7,19 @@ import {
   BarChart2,
   LogOut,
   Wallet,
+  Trophy,
+  Info,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import AIAssistant from "@/components/AIAssistant";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/expenses", label: "Expenses", icon: Receipt },
   { href: "/budget", label: "Budget", icon: PiggyBank },
   { href: "/analytics", label: "Analytics", icon: BarChart2 },
+  { href: "/achievements", label: "Achievements", icon: Trophy },
+  { href: "/about", label: "About", icon: Info },
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -70,8 +75,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto">
+      <main className="flex-1 overflow-y-auto relative">
         {children}
+        <AIAssistant />
       </main>
     </div>
   );

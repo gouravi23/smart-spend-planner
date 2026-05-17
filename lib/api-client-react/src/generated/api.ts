@@ -24,12 +24,15 @@ import type {
   Budget,
   BudgetInput,
   CategorySpend,
+  ChatInput,
+  ChatResponse,
   DashboardSummary,
   ErrorResponse,
   Expense,
   ExpenseInput,
   ExpenseListResponse,
   ExpenseUpdate,
+  GamificationData,
   GetExpensesParams,
   HealthStatus,
   LoginInput,
@@ -1099,4 +1102,152 @@ export function useGetCategoryBreakdown<TData = Awaited<ReturnType<typeof getCat
 
 
 
+
+export const getGetGamificationUrl = () => {
+
+
+
+
+  return `/api/gamification`
+}
+
+/**
+ * @summary Get gamification data - streaks, badges, health score, weekly challenge
+ */
+export const getGamification = async ( options?: RequestInit): Promise<GamificationData> => {
+
+  return customFetch<GamificationData>(getGetGamificationUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetGamificationQueryKey = () => {
+    return [
+    `/api/gamification`
+    ] as const;
+    }
+
+
+export const getGetGamificationQueryOptions = <TData = Awaited<ReturnType<typeof getGamification>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getGamification>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetGamificationQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getGamification>>> = ({ signal }) => getGamification({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getGamification>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetGamificationQueryResult = NonNullable<Awaited<ReturnType<typeof getGamification>>>
+export type GetGamificationQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get gamification data - streaks, badges, health score, weekly challenge
+ */
+
+export function useGetGamification<TData = Awaited<ReturnType<typeof getGamification>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getGamification>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetGamificationQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getAssistantChatUrl = () => {
+
+
+
+
+  return `/api/assistant/chat`
+}
+
+/**
+ * @summary Send a message to the AI financial assistant
+ */
+export const assistantChat = async (chatInput: ChatInput, options?: RequestInit): Promise<ChatResponse> => {
+
+  return customFetch<ChatResponse>(getAssistantChatUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      chatInput,)
+  }
+);}
+
+
+
+
+export const getAssistantChatMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof assistantChat>>, TError,{data: BodyType<ChatInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof assistantChat>>, TError,{data: BodyType<ChatInput>}, TContext> => {
+
+const mutationKey = ['assistantChat'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof assistantChat>>, {data: BodyType<ChatInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  assistantChat(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AssistantChatMutationResult = NonNullable<Awaited<ReturnType<typeof assistantChat>>>
+    export type AssistantChatMutationBody = BodyType<ChatInput>
+    export type AssistantChatMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Send a message to the AI financial assistant
+ */
+export const useAssistantChat = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof assistantChat>>, TError,{data: BodyType<ChatInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof assistantChat>>,
+        TError,
+        {data: BodyType<ChatInput>},
+        TContext
+      > => {
+      return useMutation(getAssistantChatMutationOptions(options));
+    }
 

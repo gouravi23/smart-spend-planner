@@ -132,6 +132,31 @@ export interface CategorySpend {
   percent: number;
 }
 
+export interface WeeklyChallenge {
+  weekStart: string;
+  targetAmount: number;
+  currentAmount: number;
+  completed: boolean;
+}
+
+export interface GamificationData {
+  currentStreak: number;
+  longestStreak: number;
+  badges: string[];
+  weeklyChallenge: WeeklyChallenge;
+  healthScore: number;
+  totalBadgesAvailable: number;
+}
+
+export interface ChatInput {
+  message: string;
+}
+
+export interface ChatResponse {
+  reply: string;
+  timestamp: string;
+}
+
 export type GetExpensesParams = {
 category?: string;
 startDate?: string;

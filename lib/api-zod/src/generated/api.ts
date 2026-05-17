@@ -264,3 +264,34 @@ export const GetCategoryBreakdownResponseItem = zod.object({
 export const GetCategoryBreakdownResponse = zod.array(GetCategoryBreakdownResponseItem)
 
 
+/**
+ * @summary Get gamification data - streaks, badges, health score, weekly challenge
+ */
+export const GetGamificationResponse = zod.object({
+  "currentStreak": zod.number(),
+  "longestStreak": zod.number(),
+  "badges": zod.array(zod.string()),
+  "weeklyChallenge": zod.object({
+  "weekStart": zod.string(),
+  "targetAmount": zod.number(),
+  "currentAmount": zod.number(),
+  "completed": zod.boolean()
+}),
+  "healthScore": zod.number(),
+  "totalBadgesAvailable": zod.number()
+})
+
+
+/**
+ * @summary Send a message to the AI financial assistant
+ */
+export const AssistantChatBody = zod.object({
+  "message": zod.string()
+})
+
+export const AssistantChatResponse = zod.object({
+  "reply": zod.string(),
+  "timestamp": zod.string()
+})
+
+
