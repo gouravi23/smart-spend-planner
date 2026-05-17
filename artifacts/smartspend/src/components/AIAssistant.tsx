@@ -128,7 +128,7 @@ export default function AIAssistant() {
                       : "bg-muted text-foreground rounded-bl-sm"
                   )}
                 >
-                  {m.content.split("\n").map((line, i) => (
+                  {(m.content ?? "").split("\n").map((line, i) => (
                     <p key={i} className={i > 0 ? "mt-0.5" : ""}>{renderContent(line)}</p>
                   ))}
                 </div>
