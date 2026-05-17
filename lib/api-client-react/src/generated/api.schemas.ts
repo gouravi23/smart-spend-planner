@@ -84,6 +84,7 @@ export interface ExpenseListResponse {
 export interface CategoryLimit {
   category: string;
   limit: number;
+  spent: number;
 }
 
 export interface Budget {
@@ -96,12 +97,17 @@ export interface Budget {
   remaining: number;
 }
 
+export interface CategoryLimitInput {
+  category: string;
+  limit: number;
+}
+
 export interface BudgetInput {
   /** @minimum 0 */
   totalLimit: number;
   month?: number;
   year?: number;
-  categoryLimits?: CategoryLimit[];
+  categoryLimits?: CategoryLimitInput[];
 }
 
 export interface DashboardSummary {

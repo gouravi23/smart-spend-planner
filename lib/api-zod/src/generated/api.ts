@@ -181,7 +181,8 @@ export const GetBudgetResponse = zod.object({
   "totalLimit": zod.number(),
   "categoryLimits": zod.array(zod.object({
   "category": zod.string(),
-  "limit": zod.number()
+  "limit": zod.number(),
+  "spent": zod.number()
 })),
   "spent": zod.number(),
   "remaining": zod.number()
@@ -212,7 +213,8 @@ export const SetBudgetResponse = zod.object({
   "totalLimit": zod.number(),
   "categoryLimits": zod.array(zod.object({
   "category": zod.string(),
-  "limit": zod.number()
+  "limit": zod.number(),
+  "spent": zod.number()
 })),
   "spent": zod.number(),
   "remaining": zod.number()

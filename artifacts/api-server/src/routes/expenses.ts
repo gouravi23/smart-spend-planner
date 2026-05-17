@@ -97,7 +97,7 @@ router.post("/expenses", async (req: AuthRequest, res: Response) => {
 
 router.get("/expenses/:id", async (req: AuthRequest, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params["id"] as string;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(404).json({ error: "Expense not found" });
       return;
@@ -126,7 +126,7 @@ router.get("/expenses/:id", async (req: AuthRequest, res: Response) => {
 
 router.put("/expenses/:id", async (req: AuthRequest, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params["id"] as string;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(404).json({ error: "Expense not found" });
       return;
@@ -175,7 +175,7 @@ router.put("/expenses/:id", async (req: AuthRequest, res: Response) => {
 
 router.delete("/expenses/:id", async (req: AuthRequest, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params["id"] as string;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(404).json({ error: "Expense not found" });
       return;

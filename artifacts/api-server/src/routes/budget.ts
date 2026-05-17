@@ -30,25 +30,33 @@ router.get("/budget", async (req: AuthRequest, res: Response) => {
     const startOfMonth = new Date(year, month - 1, 1);
     const endOfMonth = new Date(year, month, 0, 23, 59, 59, 999);
 
-    const agg = await Expense.aggregate([
-      {
-        $match: {
-          userId: budget.userId,
-          date: { $gte: startOfMonth, $lte: endOfMonth },
-        },
-      },
-      { $group: { _id: null, total: { $sum: "$amount" } } },
+    const [totalAgg, categoryAgg] = await Promise.all([
+      Expense.aggregate([
+        { $match: { userId: budget.userId, date: { $gte: startOfMonth, $lte: endOfMonth } } },
+        { $group: { _id: null, total: { $sum: "$amount" } } },
+      ]),
+      Expense.aggregate([
+        { $match: { userId: budget.userId, date: { $gte: startOfMonth, $lte: endOfMonth } } },
+        { $group: { _id: "$category", total: { $sum: "$amount" } } },
+      ]),
     ]);
 
-    const spent = agg[0]?.total ?? 0;
-    const remaining = Math.max(0, budget.totalLimit - spent);
+    const spent = totalAgg[0]?.total ?? 0;
+    const remaining = budget.totalLimit - spent;
+    const categorySpendMap = new Map<string, number>(
+      categoryAgg.map((a: { _id: string; total: number }) => [a._id, a.total])
+    );
 
     res.json({
       id: budget._id.toString(),
       month: budget.month,
       year: budget.year,
       totalLimit: budget.totalLimit,
-      categoryLimits: budget.categoryLimits,
+      categoryLimits: budget.categoryLimits.map((cl: { category: string; limit: number }) => ({
+        category: cl.category,
+        limit: cl.limit,
+        spent: categorySpendMap.get(cl.category) ?? 0,
+      })),
       spent,
       remaining,
     });
@@ -90,25 +98,33 @@ router.post("/budget", async (req: AuthRequest, res: Response) => {
     const startOfMonth = new Date(targetYear, targetMonth - 1, 1);
     const endOfMonth = new Date(targetYear, targetMonth, 0, 23, 59, 59, 999);
 
-    const agg = await Expense.aggregate([
-      {
-        $match: {
-          userId: budget.userId,
-          date: { $gte: startOfMonth, $lte: endOfMonth },
-        },
-      },
-      { $group: { _id: null, total: { $sum: "$amount" } } },
+    const [totalAgg, categoryAgg] = await Promise.all([
+      Expense.aggregate([
+        { $match: { userId: budget.userId, date: { $gte: startOfMonth, $lte: endOfMonth } } },
+        { $group: { _id: null, total: { $sum: "$amount" } } },
+      ]),
+      Expense.aggregate([
+        { $match: { userId: budget.userId, date: { $gte: startOfMonth, $lte: endOfMonth } } },
+        { $group: { _id: "$category", total: { $sum: "$amount" } } },
+      ]),
     ]);
 
-    const spent = agg[0]?.total ?? 0;
-    const remaining = Math.max(0, budget.totalLimit - spent);
+    const spent = totalAgg[0]?.total ?? 0;
+    const remaining = budget.totalLimit - spent;
+    const categorySpendMap = new Map<string, number>(
+      categoryAgg.map((a: { _id: string; total: number }) => [a._id, a.total])
+    );
 
     res.json({
       id: budget._id.toString(),
       month: budget.month,
       year: budget.year,
       totalLimit: budget.totalLimit,
-      categoryLimits: budget.categoryLimits,
+      categoryLimits: budget.categoryLimits.map((cl: { category: string; limit: number }) => ({
+        category: cl.category,
+        limit: cl.limit,
+        spent: categorySpendMap.get(cl.category) ?? 0,
+      })),
       spent,
       remaining,
     });

@@ -10,6 +10,7 @@ export * from './authResponse';
 export * from './budget';
 export * from './budgetInput';
 export * from './categoryLimit';
+export * from './categoryLimitInput';
 export * from './categorySpend';
 export * from './dashboardSummary';
 export * from './errorResponse';

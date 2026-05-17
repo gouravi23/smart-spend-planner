@@ -36,7 +36,7 @@ router.get("/analytics/summary", async (req: AuthRequest, res: Response) => {
     const expenseCount = spendAgg[0]?.count ?? 0;
     const totalBudget = budget?.totalLimit ?? 0;
     const budgetUsedPercent = totalBudget > 0 ? Math.round((totalSpentThisMonth / totalBudget) * 100) : 0;
-    const remainingBudget = Math.max(0, totalBudget - totalSpentThisMonth);
+    const remainingBudget = totalBudget - totalSpentThisMonth;
     const topCategory: string | null = categoryAgg[0]?._id ?? null;
 
     res.json({

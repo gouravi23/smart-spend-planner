@@ -216,16 +216,24 @@ export default function Budget() {
             </CardHeader>
             <CardContent>
               <div className="space-y-5">
-                {budget.categoryLimits.map(({ category, limit }) => {
+                {budget.categoryLimits.map(({ category, limit, spent: catSpent }) => {
                   const barColor = CATEGORY_COLORS[category] ?? "bg-gray-500";
+                  const pct = limit > 0 ? Math.min((catSpent / limit) * 100, 100) : 0;
+                  const isOver = catSpent > limit && limit > 0;
                   return (
                     <div key={category} data-testid={`category-budget-${category}`}>
                       <div className="flex justify-between text-sm mb-1.5">
                         <span className="font-medium">{category}</span>
-                        <span className="text-muted-foreground text-xs">{fmt(limit)} limit</span>
+                        <span className={cn("text-xs", isOver ? "text-destructive font-medium" : "text-muted-foreground")}>
+                          {fmt(catSpent)} / {fmt(limit)}
+                          {isOver && " (over)"}
+                        </span>
                       </div>
                       <div className="w-full bg-muted rounded-full h-2">
-                        <div className={cn("h-2 rounded-full", barColor)} style={{ width: "0%" }} />
+                        <div
+                          className={cn("h-2 rounded-full", isOver ? "bg-destructive" : barColor)}
+                          style={{ width: `${pct}%` }}
+                        />
                       </div>
                     </div>
                   );

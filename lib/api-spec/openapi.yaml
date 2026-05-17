@@ -492,11 +492,11 @@ components:
         categoryLimits:
           type: array
           items:
-            $ref: "#/components/schemas/CategoryLimit"
+            $ref: "#/components/schemas/CategoryLimitInput"
       required:
         - totalLimit
 
-    CategoryLimit:
+    CategoryLimitInput:
       type: object
       properties:
         category:
@@ -506,6 +506,20 @@ components:
       required:
         - category
         - limit
+
+    CategoryLimit:
+      type: object
+      properties:
+        category:
+          type: string
+        limit:
+          type: number
+        spent:
+          type: number
+      required:
+        - category
+        - limit
+        - spent
 
     DashboardSummary:
       type: object

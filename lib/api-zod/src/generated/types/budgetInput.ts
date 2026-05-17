@@ -5,12 +5,12 @@
  * SmartSpend API specification
  * OpenAPI spec version: 0.1.0
  */
-import type { CategoryLimit } from './categoryLimit';
+import type { CategoryLimitInput } from './categoryLimitInput';
 
 export interface BudgetInput {
   /** @minimum 0 */
   totalLimit: number;
   month?: number;
   year?: number;
-  categoryLimits?: CategoryLimit[];
+  categoryLimits?: CategoryLimitInput[];
 }
