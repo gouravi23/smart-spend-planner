@@ -6,6 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface HealthStatus {
-  status: string;
-}
+export type GetExpensesParams = {
+category?: string;
+startDate?: string;
+endDate?: string;
+page?: number;
+limit?: number;
+};
