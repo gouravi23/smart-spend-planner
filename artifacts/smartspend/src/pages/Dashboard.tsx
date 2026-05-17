@@ -71,7 +71,7 @@ export default function Dashboard() {
   const { data: categories, isLoading: catLoading } = useGetCategoryBreakdown();
   const { data: monthly, isLoading: monthlyLoading } = useGetMonthlyTrend();
 
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("authToken");
   const { data: gamification, isLoading: gamLoading } = useQuery<GamificationData>({
     queryKey: ["gamification"],
     queryFn: async () => {

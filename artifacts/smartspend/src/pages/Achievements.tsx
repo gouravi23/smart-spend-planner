@@ -62,7 +62,7 @@ function HealthRing({ score }: { score: number }) {
 }
 
 export default function Achievements() {
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("authToken");
   const { data, isLoading } = useQuery<GamificationData>({
     queryKey: ["gamification"],
     queryFn: async () => {
