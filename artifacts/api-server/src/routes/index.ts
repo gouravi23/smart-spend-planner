@@ -10,7 +10,10 @@ import assistantRouter from "./assistant";
 const router: IRouter = Router();
 
 router.use(healthRouter);
-router.use(authRouter);
+
+// ✅ FIXED: auth MUST be mounted under /auth
+router.use("/auth", authRouter);
+
 router.use(expensesRouter);
 router.use(budgetRouter);
 router.use(analyticsRouter);

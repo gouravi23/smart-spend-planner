@@ -7,22 +7,30 @@ import { logger } from "./lib/logger";
 const app: Express = express();
 
 /**
- * CORS FIX (IMPORTANT)
- * Allow your Vercel frontend to talk to Render backend
+ * CORS FIX (production-safe)
  */
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
   "https://smart-spend-planner.vercel.app",
+  ...(process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(",")
+    : []),
 ];
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // allow mobile apps / curl / server-to-server
+      // allow server-to-server / curl
       if (!origin) return callback(null, true);
 
+      // allow exact origins
       if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // allow all Vercel deployments (VERY IMPORTANT for previews)
+      if (origin.endsWith(".vercel.app")) {
         return callback(null, true);
       }
 
@@ -56,9 +64,7 @@ app.use(
 );
 
 /**
- * IMPORTANT:
- * your routes already contain "/auth/..."
- * so this becomes:
+ * API routes
  * /api/auth/register
  * /api/auth/login
  */

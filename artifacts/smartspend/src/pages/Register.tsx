@@ -4,7 +4,14 @@ import { z } from "zod";
 import { useLocation } from "wouter";
 import { useRegister } from "@workspace/api-client-react";
 import { useAuth } from "@/lib/auth";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Wallet } from "lucide-react";
@@ -16,6 +23,7 @@ const schema = z.object({
   email: z.string().email("Enter a valid email"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
+
 type FormValues = z.infer<typeof schema>;
 
 export default function Register() {
@@ -38,8 +46,24 @@ export default function Register() {
           setLocation("/");
         },
         onError: (err: unknown) => {
-          const message = (err as { data?: { error?: string } })?.data?.error ?? "Registration failed";
-          toast({ title: "Registration failed", description: message, variant: "destructive" });
+          let message = "Registration failed";
+
+          try {
+            const parsed =
+              typeof err === "object" && err && "message" in err
+                ? JSON.parse((err as Error).message)
+                : null;
+
+            message = parsed?.error ?? message;
+          } catch {
+            // fallback already set
+          }
+
+          toast({
+            title: "Registration failed",
+            description: message,
+            variant: "destructive",
+          });
         },
       }
     );
@@ -54,6 +78,7 @@ export default function Register() {
           </div>
           <span className="text-xl font-semibold text-white">SmartSpend</span>
         </div>
+
         <div>
           <h2 className="text-3xl font-bold text-white leading-snug">
             Start taking control<br />of your finances.
@@ -62,10 +87,19 @@ export default function Register() {
             Create a free account and start tracking your expenses, planning budgets, and understanding your spending patterns today.
           </p>
         </div>
+
         <div className="flex flex-col gap-3">
-          {["Add expenses with categories", "Set monthly budget limits", "Visualize spending with charts", "Secure JWT authentication"].map((f) => (
-            <div key={f} className="flex items-center gap-3 text-sidebar-foreground/70 text-sm">
-              <div className="w-1.5 h-1.5 rounded-full bg-sidebar-primary flex-shrink-0" />
+          {[
+            "Add expenses with categories",
+            "Set monthly budget limits",
+            "Visualize spending with charts",
+            "Secure JWT authentication",
+          ].map((f) => (
+            <div
+              key={f}
+              className="flex items-center gap-3 text-sidebar-foreground/70 text-sm"
+            >
+              <div className="w-1.5 h-1.5 rounded-full bg-sidebar-primary" />
               {f}
             </div>
           ))}
@@ -74,45 +108,60 @@ export default function Register() {
 
       <div className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-md">
-          <div className="lg:hidden flex items-center gap-2.5 mb-8">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <Wallet className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-lg font-semibold">SmartSpend</span>
-          </div>
-          <h1 className="text-2xl font-bold text-foreground mb-1">Create account</h1>
-          <p className="text-muted-foreground text-sm mb-8">Free forever, no credit card required</p>
+          <h1 className="text-2xl font-bold mb-1">Create account</h1>
+          <p className="text-sm text-muted-foreground mb-8">
+            Free forever, no credit card required
+          </p>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-              <FormField control={form.control} name="name" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full name</FormLabel>
-                  <FormControl>
-                    <Input data-testid="input-name" placeholder="Jane Smith" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="email" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input data-testid="input-email" type="email" placeholder="you@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <FormField control={form.control} name="password" render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input data-testid="input-password" type="password" placeholder="Min 6 characters" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-              <Button data-testid="button-register" type="submit" className="w-full" disabled={register.isPending}>
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Full name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Jane Smith" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input type="email" placeholder="you@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="Min 6 characters" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={register.isPending}
+              >
                 {register.isPending ? "Creating account..." : "Create account"}
               </Button>
             </form>
@@ -120,7 +169,7 @@ export default function Register() {
 
           <p className="mt-6 text-center text-sm text-muted-foreground">
             Already have an account?{" "}
-            <Link href="/login" className="text-primary font-medium hover:underline" data-testid="link-login">
+            <Link href="/login" className="text-primary font-medium hover:underline">
               Sign in
             </Link>
           </p>

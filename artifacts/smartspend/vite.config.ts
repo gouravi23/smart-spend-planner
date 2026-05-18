@@ -3,10 +3,7 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss(),
-  ],
+  plugins: [react(), tailwindcss()],
 
   resolve: {
     alias: {
@@ -16,13 +13,14 @@ export default defineConfig({
 
   server: {
     host: "0.0.0.0",
-    port: 5173,
+    port: process.env.PORT ? Number(process.env.PORT) : 5173,
+    allowedHosts: true,
 
     proxy: {
-  "/api": {
-    target: "http://localhost:8080",
-    changeOrigin: true,
-     },  
-   }
+      "/api": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
+    },
   },
 });

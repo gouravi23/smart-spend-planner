@@ -7,10 +7,13 @@ export const setAuthTokenGetter = (fn: AuthTokenGetter) => {
 };
 
 export const setBaseUrl = (_url: string) => {
-  // not needed (safe stub)
+  // not needed
 };
 
-const API_URL = "https://smartspend-api-ynby.onrender.com";
+const API_URL =
+  (typeof import.meta !== "undefined" &&
+    (import.meta as any)?.env?.VITE_API_URL) ||
+  "https://smartspend-api-ynby.onrender.com";
 
 export const customFetch = async <T>(
   url: string,
@@ -18,7 +21,6 @@ export const customFetch = async <T>(
 ): Promise<T> => {
   const token = getToken();
 
-  // ✅ ensures correct /api routing
   const cleanUrl = url.startsWith("/api")
     ? url
     : `/api${url}`;
